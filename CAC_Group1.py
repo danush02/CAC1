@@ -497,5 +497,4 @@ def viewTransactions(name,studentId):
     nxt=input("\nPress enter to continue..")
     if nxt=="":
         studentLandingPage(name,studentId)
-
 homePage()
