@@ -183,7 +183,7 @@ def adminLandingPage(name):
     elif action==3:
         viewOrders(name)
     elif action==4:
-        analyseOrders()
+        analyseOrders(name)
     elif action==5:
         userHomePage(1)
     else:
@@ -320,7 +320,7 @@ def changeMenu(name):
     elif action==4:
         adminLandingPage(name)
 
-def studentLandingPage(name):
+def studentLandingPage(name,studentId):
     os.system('cls')
     print("Student Page- Welcome! ",name)
     print("_"*20)
@@ -328,17 +328,17 @@ def studentLandingPage(name):
     print("1.Create Order\n2.View Transactions\n3.Logout")
     action=int(input("Your action:"))
     if action==1:
-        createOrder(0,0,name,[])
+        createOrder(0,0,name,[],studentId)
     elif action==2:
-        viewTransactions()
+        viewTransactions(studentId)
     elif action==3:
-        userHomePage(1)
+        userHomePage(2)
     else:
         os.system('cls')
         print("Enter a valid number\n")
-        studentLandingPage(name)
+        studentLandingPage(name,studentId)
 
-def createOrder(ch,orderid,name,order):
+def createOrder(ch,orderid,name,order,studentId):
     os.system('cls')
     if ch==0:
         order=[]
@@ -382,7 +382,7 @@ def createOrder(ch,orderid,name,order):
         total=0
         print("OrderID:",orderid)
         for line in order:
-                print("Item:",line[1],"Quantity:",line[2],"Amount",line[3])
+                print("\nItem:",line[1],"\nQuantity:",line[2],"\nAmount:",line[3])
                 total=total+int(line[3])
         print("Your total bill amount is ",total)
         payment=input("Pay the bill amount and type 'paid':")
@@ -391,23 +391,23 @@ def createOrder(ch,orderid,name,order):
             print("Your transaction reference number is ",paymentid)
             file=open("orderDetails.csv","a+")
             for line in order:
-                print("\nItem:",line[1],"\nQuantity:",line[2],"\nAmount:",line[3])
-                total=total+int(line[3])
-                file.write(line[0]+","+line[1]+","+str(line[2])+","+str(line[3])+","+str(paymentid)+"\n")
+                file.write(line[0]+","+line[1]+","+str(line[2])+","+str(line[3])+","+str(paymentid)+","+str(studentId)+"\n")
             file.close()
-            studentLandingPage(name)
+            nxt=input("Press enter to continue..")
+            if nxt=="":
+                studentLandingPage(name,studentId)
     else:
         itemQuantity=int(input("Enter required quantity:"))
-        if (itemNum-1)<=len(menu["mainCourse"]):
+        if (itemNum)<=len(menu["mainCourse"]):
             itemPrice=menu["mainCourse"][itemNum-1][1]
             itemName=menu["mainCourse"][itemNum-1][0]
-        elif (itemNum-1)>len(menu["mainCourse"]):
+        elif (itemNum)>len(menu["mainCourse"]):
             itemPrice=menu["snacks"][itemNum-len(menu["mainCourse"])-1][1]
             itemName=menu["snacks"][itemNum-len(menu["mainCourse"])-1][0]
         if ch==0:
             orderid=generateOrderid()
         order.append([orderid,itemName,itemQuantity,itemPrice*itemQuantity])
-        createOrder(ch+1,orderid,name,order)
+        createOrder(ch+1,orderid,name,order,studentId)
 
 def generateOrderid():
     rand=[0]*5
@@ -438,15 +438,41 @@ def viewOrders(name):
             nxt=input("Press enter to continue..")
             if nxt=="":
                 adminLandingPage(name)
-def analyseOrders():
+
+def analyseOrders(name):
+    food=[]
+    foodName=[]
     os.system('cls')
     print("Data Analysis")
     print("-"*20)
     itemNLen=0
+    overallIncome=0
     for i in open("orderDetails.csv","r+").readlines():
         details=i.split(",")
         if len(details[1])>itemNLen:
             itemNLen=len(details[1])
     print("Item Name"+" "*(itemNLen-len("Item Name")+4)+"Total Quantity"+" "*2+"Total Amount")
-    
+    for i in open("orderDetails.csv","r+").readlines():
+        if not("item" in i):
+            totalQuantity=0
+            totalAmount=0
+            details=i.split(",")
+            itemName=details[1]
+            overallIncome+=int(details[3])
+            for j in open("orderDetails.csv","r+").readlines():
+                line=j.split(",")
+                if itemName==line[1] and not(itemName in foodName):
+                    totalQuantity+=int(line[2])
+                    totalAmount+=int(line[3])
+            if not(itemName in foodName ):
+                foodName.append(itemName)
+                print(itemName+" "*((itemNLen-len(itemName))+4)+str(totalQuantity)+" "*((len("Total Quantity")-len(str(totalQuantity)))+2)+str(totalAmount))
+                food.append([itemName,totalAmount])
+    print("\nTotal Income Earned = ",overallIncome)
+    food.sort(key=lambda x:x[1],reverse=True)
+    print(food[0][0]," has maximum sales of ",food[0][1])
+    print(food[len(food)-1][0]," has minimum sales of ",food[len(food)-1][1])
+    nxt=input("Press enter to continue..")
+    if nxt=="":
+        adminLandingPage(name)
 homePage()
