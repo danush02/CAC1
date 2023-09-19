@@ -330,7 +330,7 @@ def studentLandingPage(name,studentId):
     if action==1:
         createOrder(0,0,name,[],studentId)
     elif action==2:
-        viewTransactions(studentId)
+        viewTransactions(name,studentId)
     elif action==3:
         userHomePage(2)
     else:
@@ -475,4 +475,27 @@ def analyseOrders(name):
     nxt=input("Press enter to continue..")
     if nxt=="":
         adminLandingPage(name)
+    
+def viewTransactions(name,studentId):
+    os.system('cls')
+    print("Transaction History")
+    print("-"*20)
+    itemNLen=0
+    total=0
+    for i in open("orderDetails.csv","r+").readlines():
+        details=i.split(",")
+        if len(details[1])>itemNLen:
+            itemNLen=len(details[1])
+    print("Order ID"+" "*2+"Item Name"+" "*(itemNLen-len("Item Name")+4)+"Quantity"+" "*2+"Amount")
+    for i in open("orderDetails.csv","r+").readlines():
+        details=i.split(",")
+        if details[2]!="quantity":
+            if int(details[5])==int(studentId):
+                total+=int(details[3])
+                print(details[0]+" "*((len("Order ID")-len(details[0]))+2)+details[1]+" "*((itemNLen-len(details[1]))+4)+details[2]+" "*((len("Quantity")-len(details[2]))+2)+details[3])
+    print("Your Total Transaction is ",total)
+    nxt=input("\nPress enter to continue..")
+    if nxt=="":
+        studentLandingPage(name,studentId)
+
 homePage()
