@@ -88,11 +88,12 @@ def userLogin(role):
                 if cred[2]==password:
                     flag=True
                     name=cred[3]
+                    studentId=cred[0]
             if flag==False:
                 print("Password is incorrect")
                 userLogin(role)
             else:
-                studentLandingPage(name)
+                studentLandingPage(name,studentId)
 
 def createNewUser(role):
     os.system('cls')
@@ -176,11 +177,11 @@ def adminLandingPage(name):
     print("1.Verify Payment\n2.Change Menu\n3.View Orders\n4.Analyse Orders\n5.Logout")
     action=int(input("Your action:"))
     if action==1:
-        paymentVerification()
+        paymentVerification(name)
     elif action==2:
         changeMenu(name)
     elif action==3:
-        viewOrders()
+        viewOrders(name)
     elif action==4:
         analyseOrders()
     elif action==5:
@@ -191,11 +192,28 @@ def adminLandingPage(name):
         adminLandingPage(name)
 
 #Function to verify payment done by student
-def paymentVerification():
+def paymentVerification(name):
     os.system('cls')
     print("Payment Verification Page")
     print("-"*30)
-
+    flag=False
+    paymentId=input("Enter the payment ID:")
+    for i in open("orderDetails.csv","r+").readlines():
+        details=i.split(",")
+        if paymentId in i:
+            flag=True
+            orderid=details[0]
+    if flag:
+        print("Payment completed for order ",orderid)
+        nxt=input("Press Enter to continue..")
+        if nxt=="":
+            adminLandingPage(name)
+    else:
+        print("There is no payment record")
+        nxt=input("Press Enter to continue..")
+        if nxt=="":
+            adminLandingPage(name)
+        
 def changeMenu(name):
     menu={"mainCourse":[],
     "snacks":[]}
@@ -373,9 +391,9 @@ def createOrder(ch,orderid,name,order):
             print("Your transaction reference number is ",paymentid)
             file=open("orderDetails.csv","a+")
             for line in order:
-                print("Item:",line[1],"Quantity:",line[2],"Amount",line[3])
+                print("\nItem:",line[1],"\nQuantity:",line[2],"\nAmount:",line[3])
                 total=total+int(line[3])
-                file.write(line[0]+","+line[1]+","+str(line[2])+","+str(line[3])+","+str(paymentid))
+                file.write(line[0]+","+line[1]+","+str(line[2])+","+str(line[3])+","+str(paymentid)+"\n")
             file.close()
             studentLandingPage(name)
     else:
@@ -399,8 +417,36 @@ def generateOrderid():
 
 def generatePaymentid():
     rand=[0]*6
-    for i in range(0,5):
+    for i in range(0,6):
         rand[i]=str(random.randint(random.randint(0,5),random.randint(6,9)))
     return rand[0]+rand[1]+rand[2]+rand[3]+rand[4]+rand[5]
 
+def viewOrders(name):
+    os.system('cls')
+    print("Order Details")
+    print("-"*20)
+    itemNLen=0
+    for i in open("orderDetails.csv","r+").readlines():
+        details=i.split(",")
+        if len(details[1])>itemNLen:
+            itemNLen=len(details[1])
+    print("Order ID"+" "*2+"Item Name"+" "*(itemNLen-len("Item Name")+4)+"Quantity"+" "*2+"Amount")
+    for i in open("orderDetails.csv","r+").readlines():
+        details=i.split(",")
+        if details[2]!="quantity":
+            print(details[0]+" "*((len("Order ID")-len(details[0]))+2)+details[1]+" "*((itemNLen-len(details[1]))+4)+details[2]+" "*((len("Quantity")-len(details[2]))+2)+details[3])
+            nxt=input("Press enter to continue..")
+            if nxt=="":
+                adminLandingPage(name)
+def analyseOrders():
+    os.system('cls')
+    print("Data Analysis")
+    print("-"*20)
+    itemNLen=0
+    for i in open("orderDetails.csv","r+").readlines():
+        details=i.split(",")
+        if len(details[1])>itemNLen:
+            itemNLen=len(details[1])
+    print("Item Name"+" "*(itemNLen-len("Item Name")+4)+"Total Quantity"+" "*2+"Total Amount")
+    
 homePage()
