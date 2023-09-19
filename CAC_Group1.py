@@ -10,17 +10,20 @@ def homePage():
     role=int(input("Select your Role:"))
     os.system('cls')
     if role==1:
-        adminHomePage(role)
+        userHomePage(role)
     elif role==2:
-        studentLogin()
+        userHomePage(role)
     else:
         os.system('cls')
         print("Enter a valid number\n")
         homePage()
 
-#Function to display login and login related actions for Admin users
-def adminHomePage(role):
-    print("Admin Login")
+#Function to display login and login related actions for users
+def userHomePage(role):
+    if role==1:
+        print("Admin Login")
+    elif role==2:
+        print("Student Login")
     print("-"*20)
     print("Select your action:")
     print("1.Login\n2.Create New User\n3.Forgot Password\n4.Exit")
@@ -36,7 +39,7 @@ def adminHomePage(role):
     else:
         os.system('cls')
         print("Enter a valid number\n")
-        adminHomePage(role)
+        userHomePage(role)
 
 #Function to display Login page for users
 def userLogin(role):
@@ -88,13 +91,86 @@ def userLogin(role):
             else:
                 studentLandingPage()
 
+def createNewUser(role):
+    os.system('cls')
+    print("Add New User")
+    print("-"*20)
+    if role==1:
+        name=input("Enter your Name:")
+        name=name.strip().title()
+        empid=input("Enter you Employee ID:")
+        flag=False
+        for line in open("adminCredentials.csv","r+").readlines():
+            id=line.split(",")
+            if id[0]==empid:
+                flag=True
+        if flag:
+            print("User already exist")
+            nxt=input("Press enter to continue")
+            if nxt=="":
+                createNewUser(role)
+        else:
+            username=name[:4].lower()+str(random.randint(10,99))+str(random.randint(10,99))
+            print("Your Username is ",username)
+            password=name[:1].lower()+str(random.randint(0,9))+name[1:3]+str(random.randint(100,999))
+            print("Your Password is ",password)
+            file=open("adminCredentials.csv","a+")
+            file.write(empid+","+username+","+password+","+name+"\n")
+            file.close()
+            userHomePage(role)
+    elif role==2:
+        print("1.Create New User\n2.Delete account")
+        action=int(input("Select your action:"))
+        if action==1:
+            name=input("Enter your Name:")
+            name=name.strip().title()
+            studid=input("Enter you Student ID:")
+            flag=False
+            for line in open("studentCredentials.csv","r+").readlines():
+                id=line.split(",")
+                if id[0]==studid:
+                    flag=True
+            if flag:
+                print("User already exist")
+                nxt=input("Press enter to continue")
+                if nxt=="":
+                    createNewUser(role)
+            else:
+                username=name[:4].lower()+str(random.randint(10,99))+str(random.randint(10,99))
+                print("Your Username is ",username)
+                password=name[:1].lower()+str(random.randint(0,9))+name[1:3]+str(random.randint(100,999))
+                print("Your Password is ",password)
+                file=open("studentCredentials.csv","a+")
+                file.write(studid+","+username+","+password+","+name+"\n")
+                file.close()
+
+def forgotPassword(role):
+    os.system('cls')
+    print("Password Recovery Page")
+    print("-"*20)
+    username=input("Enter your username:")
+    if role==1:
+        for i in open("adminCredentials.csv","r+").readlines():
+            cred=i.split(",")
+            if cred[1]==username:
+                print("Your password is ",cred[2])
+                name=cred[3]
+                adminLandingPage(name)
+    elif role==2:
+        for i in open("studentCredentials.csv","r+").readlines():
+            cred=i.split(",")
+            if cred[1]==username:
+                print("Your password is ",cred[2])
+                name=cred[3]
+                studentLandingPage(name)
+
 #Function for Landing Page of Admin after login
 def adminLandingPage(name):
     os.system('cls')
     print("Admin Page- Welcome! ",name)
     print("_"*20)
     print("Select your action:")
-    print("1.Verify Payment\n2.Change Menu\n3.View Orders\n4.Analyse Orders")
+    print("1.Verify Payment\n2.Change Menu\n3.View Orders\n4.Analyse Orders\n5.Logout")
     action=int(input("Your action:"))
     if action==1:
         paymentVerification()
@@ -104,10 +180,12 @@ def adminLandingPage(name):
         viewOrders()
     elif action==4:
         analyseOrders()
+    elif action==5:
+        userHomePage(1)
     else:
         os.system('cls')
         print("Enter a valid number\n")
-        adminLandingPage()
+        adminLandingPage(name)
 
 #Function to verify payment done by student
 def paymentVerification():
@@ -221,77 +299,26 @@ def changeMenu(name):
     elif action==4:
         adminLandingPage(name)
 
-def createNewUser(role):
+def studentLandingPage(name):
     os.system('cls')
-    print("Add New User")
-    print("-"*20)
-    if role==1:
-        name=input("Enter your Name:")
-        name=name.strip().title()
-        empid=input("Enter you Employee ID:")
-        flag=False
-        for line in open("adminCredentials.csv","r+").readlines():
-            id=line.split(",")
-            if id[0]==empid:
-                flag=True
-        if flag:
-            print("User already exist")
-            nxt=input("Press enter to continue")
-            if nxt=="":
-                createNewUser(role)
-        else:
-            username=name[:4].lower()+str(random.randint(10,99))+str(random.randint(10,99))
-            print("Your Username is ",username)
-            password=name[:1].lower()+str(random.randint(0,9))+name[1:3]+str(random.randint(100,999))
-            print("Your Password is ",password)
-            file=open("adminCredentials.csv","a+")
-            file.write(empid+","+username+","+password+","+name+"\n")
-            file.close()
-            adminHomePage(role)
-    elif role==2:
-        print("1.Create New User\n2.Delete account")
-        action=int(input("Select your action:"))
-        if action==1:
-            name=input("Enter your Name:")
-            name=name.strip().title()
-            studid=input("Enter you Student ID:")
-            flag=False
-            for line in open("studentCredentials.csv","r+").readlines():
-                id=line.split(",")
-                if id[0]==studid:
-                    flag=True
-            if flag:
-                print("User already exist")
-                nxt=input("Press enter to continue")
-                if nxt=="":
-                    createNewUser(role)
-            else:
-                username=name[:4].lower()+str(random.randint(10,99))+str(random.randint(10,99))
-                print("Your Username is ",username)
-                password=name[:1].lower()+str(random.randint(0,9))+name[1:3]+str(random.randint(100,999))
-                print("Your Password is ",password)
-                file=open("studentCredentials.csv","a+")
-                file.write(studid+","+username+","+password+","+name+"\n")
-                file.close()
+    print("Student Page- Welcome! ",name)
+    print("_"*20)
+    print("Select your action:")
+    print("1.Create Order\n2.View Transactions\n3.Analyse Orders\n4.Logout")
+    action=int(input("Your action:"))
+    if action==1:
+        paymentVerification()
+    elif action==2:
+        changeMenu(name)
+    elif action==3:
+        viewOrders()
+    elif action==4:
+        analyseOrders()
+    else:
+        os.system('cls')
+        print("Enter a valid number\n")
+        adminLandingPage()
 
-def forgotPassword(role):
-    os.system('cls')
-    print("Password Recovery Page")
-    print("-"*20)
-    username=input("Enter your username:")
-    if role==1:
-        for i in open("adminCredentials.csv","r+").readlines():
-            cred=i.split(",")
-            if cred[1]==username:
-                print("Your password is ",cred[2])
-                name=cred[3]
-                adminLandingPage(name)
-    elif role==2:
-        for i in open("studentCredentials.csv","r+").readlines():
-            cred=i.split(",")
-            if cred[1]==username:
-                print("Your password is ",cred[2])
-                name=cred[3]
-                studentLandingPage(name)
+
             
 homePage()
