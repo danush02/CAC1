@@ -122,10 +122,10 @@ def createNewUser(role):
         print("1.Create New User\n2.Delete account")
         action=int(input("Select your action:"))
         if action==1:
+            flag=False
             name=input("Enter your Name:")
             name=name.strip().title()
             studid=input("Enter you Student ID:")
-            flag=False
             for line in open("studentCredentials.csv","r+").readlines():
                 id=line.split(",")
                 if id[0]==studid:
@@ -136,14 +136,16 @@ def createNewUser(role):
                 if nxt=="":
                     createNewUser(role)
             else:
+                department=["MSc Data Science","BA LLB","LLM","BSc Data Science","MBA","BCom"]
+                dept=department[int(input("1.MSc Data Science\n2.BA LLB\n3.LLM\n4.BSc Data Science\n5.MBA\n6.BCom\nSelect your Department:"))-1]
                 username=name[:4].lower()+str(random.randint(10,99))+str(random.randint(10,99))
                 print("Your Username is ",username)
                 password=name[:1].lower()+str(random.randint(0,9))+name[1:3]+str(random.randint(100,999))
                 print("Your Password is ",password)
                 file=open("studentCredentials.csv","a+")
-                file.write(studid+","+username+","+password+","+name+"\n")
+                file.write(studid+","+username+","+password+","+name+","+department+"\n")
                 file.close()
-
+                
 def forgotPassword(role):
     os.system('cls')
     print("Password Recovery Page")
@@ -307,18 +309,73 @@ def studentLandingPage(name):
     print("1.Create Order\n2.View Transactions\n3.Analyse Orders\n4.Logout")
     action=int(input("Your action:"))
     if action==1:
-        paymentVerification()
+        createOrder(0,0)
     elif action==2:
-        changeMenu(name)
+        viewTransactions()
     elif action==3:
-        viewOrders()
-    elif action==4:
         analyseOrders()
+    elif action==4:
+        userHomePage(1)
     else:
         os.system('cls')
         print("Enter a valid number\n")
-        adminLandingPage()
+        studentLandingPage(name)
 
+def createOrder(check,orderid):
+    print("Food Order")
+    print("Today's Menu")
+    print("-"*30)
+    menu={"mainCourse":[],
+    "snacks":[]}
+    os.system('cls')
+    print("Current Menu")
+    print("-"*15)
+    slen=0
+    for i in open("mainCourseMenu.csv","r+").readlines():
+        item=i.split(",")
+        if item[0]=="itemName" or item[1]=="itemPrice\n":
+            pass
+        else:
+            menu["mainCourse"].append([item[0],int(item[1])])
 
-            
+    for i in open("snacksMenu.csv","r+").readlines():
+        item=i.split(",")
+        if item[0]=="itemName" or item[1]=="itemPrice\n":
+            pass
+        else:
+            menu["snacks"].append([item[0],int(item[1])])
+    for i in menu["mainCourse"]:
+        check=len(i[0])
+        if check>=slen:
+            slen=check
+    print("No."+" "*3+"Dish Name"+" "*(slen-len("Dish Name")+4)+"Price")
+    menu["mainCourse"].sort(key=lambda x:x[1],reverse=True)
+    sno=0
+    for i in menu["mainCourse"]:
+        sno+=1
+        print(str(sno)+" "*(3-len(str(sno))+3)+i[0]+" "*(slen-len(i[0])+4)+str(i[1]))
+    menu["snacks"].sort(key=lambda x:x[1],reverse=True)
+    for i in menu["snacks"]:
+        sno+=1
+        print(str(sno)+" "*(3-len(str(sno))+3)+i[0]+" "*(slen-len(i[0])+4)+str(i[1]))
+    itemNum=int(input("Enter required item number:"))
+    itemQuantity=int(input("Enter required quantity:"))
+    if (itemNum-1)<=len(menu["mainCourse"]):
+        itemPrice=menu["mainCourse"][itemNum-1][1]
+        itemName=menu["mainCourse"][itemNum-1][0]
+    elif (itemNum-1)>len(menu["mainCourse"]):
+        itemPrice=menu["snacks"][itemNum-len(menu["mainCourse"])-1][1]
+        itemName=menu["snacks"][itemNum-len(menu["mainCourse"])-1][0]
+    if check==0:
+        orderid=generateOrderid()
+    file=open("orderDetails.csv","a+")
+    file.write(str(orderid)+","+itemName+","+str(itemQuantity)+","+str(itemPrice*itemQuantity))
+    createOrder(check+1,orderid)
+
+def generateOrderid():
+    rand=[0]*5
+    for i in range(0,5):
+        rand[i]=str(random.randint(0,9))
+    return rand[0]+rand[1]+rand[2]+rand[3]+rand[4]
+
 homePage()
