@@ -1,3 +1,16 @@
+#CAC - Group 1
+#Application: Billing Management System
+#Group Member: Aruna Vijaykumar, Suraj Mishra, Thamizhanbu E
+#_____________________________________________________________
+#Application End Users: Admin of Billing, Student/Customer
+
+#Application Use: 
+#This billing application serves as a pay before eat system. Instead of people paying in billing counters which creates crowd and becomes a bottelneck in restaurnt in handeling customers.
+#To handle this situation our application helps in taking orders online and store it in a database for later verification and analysis
+#For security purpose we have also included login credentials for each end users enabling data security and screening users from accessing other user's transactions
+#Admin will be able to access the database (.csv file) and view all orders, verify payment, change menu and data analysis
+#Student will be able to create order and view transaction history
+#______________________________________________________________________________________________________________________________
 import os
 import random
 
@@ -18,7 +31,7 @@ def homePage():
         print("Enter a valid number\n")
         homePage()
 
-#Function to display login and login related actions for users
+#Function to display login and login related actions for users and execution based on user role
 def userHomePage(role):
     if role==1:
         print("Admin Login")
@@ -41,7 +54,7 @@ def userHomePage(role):
         print("Enter a valid number\n")
         userHomePage(role)
 
-#Function to display Login page for users
+#Function to display Login page for users and execution based on user role. Username and Password verification done using data stored in respective user files
 def userLogin(role):
     os.system('cls')
     print("Login Page")
@@ -95,6 +108,7 @@ def userLogin(role):
             else:
                 studentLandingPage(name,studentId)
 
+#Function to create new user and execution based on user role. Admin credentials stored in adminCredentials.csv, student details stored in studentCredentials.csv
 def createNewUser(role):
     os.system('cls')
     print("Add New User")
@@ -150,6 +164,7 @@ def createNewUser(role):
             if nxt=="":
                 userLogin(role)
             
+#Fuction used to recover forgoten password and execution based on user role
 def forgotPassword(role):
     os.system('cls')
     print("Password Recovery Page")
@@ -213,7 +228,8 @@ def paymentVerification(name):
         nxt=input("Press Enter to continue..")
         if nxt=="":
             adminLandingPage(name)
-        
+
+#Function used to change menu and only accessible by admin. mainCourse.csv used to store main course menu and snacksMenu.csv used to store snacls menu
 def changeMenu(name):
     menu={"mainCourse":[],
     "snacks":[]}
@@ -320,6 +336,7 @@ def changeMenu(name):
     elif action==4:
         adminLandingPage(name)
 
+#Function displaying landing page for student after login
 def studentLandingPage(name,studentId):
     os.system('cls')
     print("Student Page- Welcome! ",name)
@@ -338,6 +355,7 @@ def studentLandingPage(name,studentId):
         print("Enter a valid number\n")
         studentLandingPage(name,studentId)
 
+#Function to create order for students. Created orders are stored in orderDetails.csv. Order ID, Item Name, Quantity, Amount and student ID are stored in orderDetails.csv
 def createOrder(ch,orderid,name,order,studentId):
     os.system('cls')
     if ch==0:
@@ -409,18 +427,21 @@ def createOrder(ch,orderid,name,order,studentId):
         order.append([orderid,itemName,itemQuantity,itemPrice*itemQuantity])
         createOrder(ch+1,orderid,name,order,studentId)
 
+#Function to generate order ID for orders
 def generateOrderid():
     rand=[0]*5
     for i in range(0,5):
         rand[i]=str(random.randint(0,9))
     return rand[0]+rand[1]+rand[2]+rand[3]+rand[4]
 
+#Function to generate payment id for paid orders
 def generatePaymentid():
     rand=[0]*6
     for i in range(0,6):
         rand[i]=str(random.randint(random.randint(0,5),random.randint(6,9)))
     return rand[0]+rand[1]+rand[2]+rand[3]+rand[4]+rand[5]
 
+#Function to view all the orders stored in database, accessible only by admin
 def viewOrders(name):
     os.system('cls')
     print("Order Details")
@@ -439,6 +460,7 @@ def viewOrders(name):
             if nxt=="":
                 adminLandingPage(name)
 
+#Fuction used to find insights from the orders
 def analyseOrders(name):
     food=[]
     foodName=[]
@@ -475,7 +497,8 @@ def analyseOrders(name):
     nxt=input("Press enter to continue..")
     if nxt=="":
         adminLandingPage(name)
-    
+
+#Function to display transaction history of a student  
 def viewTransactions(name,studentId):
     os.system('cls')
     print("Transaction History")
@@ -497,4 +520,5 @@ def viewTransactions(name,studentId):
     nxt=input("\nPress enter to continue..")
     if nxt=="":
         studentLandingPage(name,studentId)
+        
 homePage()
