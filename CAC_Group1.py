@@ -4,12 +4,12 @@
 #_____________________________________________________________
 #Application End Users: Admin of Billing, Student/Customer
 
-#Application Use: 
-#This billing application serves as a pay before eat system. Instead of people paying in billing counters which creates crowd and becomes a bottelneck in restaurnt in handeling customers.
-#To handle this situation our application helps in taking orders online and store it in a database for later verification and analysis
-#For security purpose we have also included login credentials for each end users enabling data security and screening users from accessing other user's transactions
-#Admin will be able to access the database (.csv file) and view all orders, verify payment, change menu and data analysis
-#Student will be able to create order and view transaction history
+"""Application Use: 
+This billing application serves as a pay before eat system. Instead of people paying in billing counters which creates crowd and becomes a bottelneck in restaurnt in handeling customers.
+To handle this situation our application helps in taking orders online and store it in a database for later verification and analysis
+For security purpose we have also included login credentials for each end users enabling data security and screening users from accessing other user's transactions
+Admin will be able to access the database (.csv file) and view all orders, verify payment, change menu and data analysis
+Student will be able to create order and view transaction history"""
 #______________________________________________________________________________________________________________________________
 import os
 import random
@@ -456,9 +456,9 @@ def viewOrders(name):
         details=i.split(",")
         if details[2]!="quantity":
             print(details[0]+" "*((len("Order ID")-len(details[0]))+2)+details[1]+" "*((itemNLen-len(details[1]))+4)+details[2]+" "*((len("Quantity")-len(details[2]))+2)+details[3])
-            nxt=input("Press enter to continue..")
-            if nxt=="":
-                adminLandingPage(name)
+    nxt=input("Press enter to continue..")
+    if nxt=="":
+        adminLandingPage(name)
 
 #Fuction used to find insights from the orders
 def analyseOrders(name):
